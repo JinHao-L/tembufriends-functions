@@ -31,14 +31,17 @@ export const createPost = functions.https.onCall((data, context) => {
             'while authenticated.');
     }
 
+    const sender_name = data.sender_name || context.auth.token.name;
+    const sender_img = data.sender_img || context.auth.token.picture;
+
     const postElements = {
         time_posted: admin.firestore.Timestamp.now(),
         likeCount: 0,
         likes: [],
         body: body,
         is_private: is_private,
-        sender_img: context.auth.token.picture,
-        sender_name: context.auth.token.name,
+        sender_img: sender_img,
+        sender_name: sender_name,
         sender_uid: context.auth.token.uid,
         receiver_uid: receiver_uid,
         post_id: "",
