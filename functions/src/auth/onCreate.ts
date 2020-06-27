@@ -1,59 +1,45 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 
-export const createProfile = functions.auth.user().onCreate((user, context) => {
-    const {email, displayName, uid, photoURL} = user;
-    const name = displayName + " " + photoURL;
+const db = admin.firestore();
+
+export const createProfile = functions.https.onCall((user, context) => {
+    const uid = user.uid;
+    const email = user.nusEmail;
+    const firstName = user.firstName;
+    const lastName = user.lastName;
+
     const userData = {
         uid: uid,
         email: email,
-        firstName: displayName,
-        lastName: photoURL,
-        displayName: name,
-        modules: [],
+        firstName: firstName,
+        lastName: lastName,
+        displayName: firstName + ' ' + lastName,
         friendsCount: 0,
         admin: false,
-        createdAt: context.timestamp
-        // about
-        // profileImg
-        // bannerImg
-        // year
-        // major
-        // house
-        // roomNumber
-    }
+        createdAt: admin.firestore.Timestamp.now(),
+        verified: false,
+    };
 
     const greetingsPost = {
         body: "Thanks for using TembuFriends! We are still in development phase. " +
             "Do give us your feedback and we will strive to improve!",
-        isPrivate: true,
+        is_private: true,
+        receiver_uid: uid,
         sender_name: "TembuFriends Team",
-        sender_uid: "001",
-        timePosted: admin.firestore.Timestamp.now(),
-        likeCount: 0,
+        time_posted: admin.firestore.Timestamp.now(),
         likes: [],
-        id: "",
+        post_id: "",
     }
+    const batch = db.batch();
+    // User profile
+    const newUserRef = db.collection('users').doc(uid)
+    batch.set(newUserRef, userData);
 
-    console.log('Creating user: ' + uid);
-    const batch = admin.firestore().batch()
-    const promises: Promise<any>[] = [];
-    const db = admin.firestore();
-
-    const userDataRef = db.collection('users').doc(`${uid}`)
-    const postRef = db.collection('posts').doc(`${uid}`)
+    // Welcome post
     const newPostRef = db.collection(`posts/${uid}/userPosts`).doc()
-    greetingsPost.id = newPostRef.id;
-
-    batch.set(userDataRef, userData, {merge: true});
-    batch.set(postRef, {totalPosts: 1}, {merge: true});
+    greetingsPost.post_id = newPostRef.id;
     batch.set(newPostRef, greetingsPost);
-    promises.push(batch.commit());
 
-    promises.push(admin.auth()
-        .updateUser(uid, {
-            photoURL: undefined,
-        }));
-
-    return Promise.all(promises);
+    return batch.commit();
 })
