@@ -7,7 +7,7 @@ See Tembu Friends at [link](https://github.com/JinHao-L/tembu-friends)
 ## Implemented backend functions
 - auth/**onCreate**:
    - Create all userData on firestore and add a private welcome posts from development team
-- auth/onDelete:
+- auth/**onDelete**:
    - Delete all userData, posts from firestore
    
 - firestore/users/**onUpdate**:
