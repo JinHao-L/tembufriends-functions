@@ -5,7 +5,7 @@ const db = admin.firestore();
 
 export const createProfile = functions.https.onCall((user, context) => {
     const uid = user.uid;
-    const email = user.nusEmail;
+    const email = user.email;
     const firstName = user.firstName;
     const lastName = user.lastName;
 
