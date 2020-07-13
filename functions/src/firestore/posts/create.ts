@@ -3,6 +3,15 @@ import * as admin from 'firebase-admin';
 
 const db = admin.firestore();
 
+function shorten(str: string, len: number, separator = ' ') {
+    const cut = str.indexOf(separator, len);
+    if (cut == -1) {
+        return str;
+    } else {
+        return str.substring(0, cut) + "...";
+    }
+}
+
 export const createPost = functions.https.onCall((data, context) => {
     const body = data.body;
     const is_private = data.is_private || false;
@@ -14,7 +23,7 @@ export const createPost = functions.https.onCall((data, context) => {
         throw new functions.https.HttpsError(
             'invalid-argument',
             'The function must be called with ' +
-                'one arguments "body" containing the post message to add.'
+            'one arguments "body" containing the post message to add.',
         );
     }
 
@@ -22,14 +31,14 @@ export const createPost = functions.https.onCall((data, context) => {
         throw new functions.https.HttpsError(
             'invalid-argument',
             'The function must be called with ' +
-                'one arguments "receiver_uid" containing the uid of the receiver.'
+            'one arguments "receiver_uid" containing the uid of the receiver.',
         );
     }
 
     if (imgUrl && !imgRatio) {
         throw new functions.https.HttpsError(
             'invalid-argument',
-            'The argument "imgUrl" have to be ' + 'paired with the argument "imgRatio'
+            'The argument "imgUrl" have to be ' + 'paired with the argument "imgRatio',
         );
     }
 
@@ -37,7 +46,7 @@ export const createPost = functions.https.onCall((data, context) => {
     if (!context.auth) {
         throw new functions.https.HttpsError(
             'failed-precondition',
-            'The function must be called ' + 'while authenticated.'
+            'The function must be called ' + 'while authenticated.',
         );
     }
 
@@ -60,10 +69,14 @@ export const createPost = functions.https.onCall((data, context) => {
         imgRatio: imgRatio,
     };
 
+    const shortBody = shorten(body, 35);
+
     const notification = {
-        type: 'Post',
+        type: 'FriendAccepted',
+        sender_img: sender_img,
+        sender_uid: context.auth.token.uid,
         uid: receiver_uid,
-        message: `${sender_name} posted on your wall:` + body,
+        message: `${sender_name} posted on your wall: "${shortBody}"`,
         timeCreated: currTime,
         notification_id: '',
         seen: false,

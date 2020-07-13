@@ -22,11 +22,13 @@ export const addFriend = functions.firestore
                 .then((user) => {
                     if (user) {
                         const requested_name = user.displayName;
+                        const sender_img = user.photoURL;
 
                         const notification = {
                             type: 'FriendAccepted',
+                            sender_img: sender_img,
                             uid: requested,
-                            message: `${requested_name} accepted your friend request:`,
+                            message: `${requested_name} accepted your friend request`,
                             timeCreated: admin.firestore.Timestamp.now(),
                             notification_id: '',
                             seen: false,
