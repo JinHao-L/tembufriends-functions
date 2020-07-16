@@ -5,6 +5,7 @@ const db = admin.firestore();
 
 export const friendRequest = functions.https.onCall((request, context) => {
     const requested_uid = request.uid;
+    const expoPushToken = request.expoPushToken;
 
     if (!requested_uid) {
         throw new functions.https.HttpsError(
@@ -22,8 +23,6 @@ export const friendRequest = functions.https.onCall((request, context) => {
     }
 
     const initiator_uid = context.auth.uid;
-    const initiator_name = context.auth.token.name || 'A user';
-    const initiator_image = context.auth.token.picture;
     console.log(context.auth.token.name);
 
     const bond = {
@@ -35,30 +34,16 @@ export const friendRequest = functions.https.onCall((request, context) => {
         status: 'pending',
         initiator_uid: initiator_uid,
         requested_uid: requested_uid,
+        time_requested: admin.firestore.Timestamp.now(),
+        seen: false,
+        expoPushToken: expoPushToken,
     };
 
-    const notification = {
-        type: 'FriendRequest',
-        sender_img: initiator_image,
-        uid: initiator_uid,
-        message: `${initiator_name} sent you a new friend request`,
-        timeCreated: admin.firestore.Timestamp.now(),
-        notification_id: '',
-        seen: false,
-    };
     const batch = db.batch();
 
-
-    const notificationRef = admin
-        .firestore()
-        .collection(`notifications/${requested_uid}/notification`)
-        .doc();
-    notification.notification_id = notificationRef.id;
-
-    const friendsRef = db.collection('friends').doc(notificationRef.id);
-    bond.friendship_id = notificationRef.id;
+    const friendsRef = db.collection('friends').doc();
+    bond.friendship_id = friendsRef.id;
 
     batch.set(friendsRef, bond);
-    batch.set(notificationRef, notification);
     return batch.commit();
 });

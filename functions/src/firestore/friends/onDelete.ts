@@ -24,18 +24,6 @@ export const removeFriend = functions.firestore
             batch.update(requestedUserRef, { friendsCount: decrement });
 
             return batch.commit();
-        } else if (deletedStatus === 'pending') {
-            const batch = db.batch();
-            const id = deletedBond.friendship_id;
-
-            const notificationRef = admin
-                .firestore()
-                .collection(`notifications/${requested}/notification`)
-                .doc(id);
-
-            batch.delete(notificationRef);
-
-            return batch.commit();
         }
 
         return Promise.resolve();

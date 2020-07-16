@@ -19,7 +19,11 @@ See Tembu Friends at [link](https://github.com/JinHao-L/tembu-friends)
    - Trigger function that sends push notification to user
 
 ## Tech stack
-**Tech used**: Firebase Functions, Firebase Authentification, Firebase Firestore, Firebase Storage, Google Cloud Storage
+**Tech used**: 
+- Firebase Functions, 
+- Firebase Authentication, 
+- Firebase Firestore, 
+- Firebase Storage
 
 **Language**: Typescript
 

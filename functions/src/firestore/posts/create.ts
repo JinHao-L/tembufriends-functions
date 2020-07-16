@@ -3,15 +3,6 @@ import * as admin from 'firebase-admin';
 
 const db = admin.firestore();
 
-function shorten(str: string, len: number, separator = ' ') {
-    const cut = str.indexOf(separator, len);
-    if (cut == -1) {
-        return str;
-    } else {
-        return str.substring(0, cut) + "...";
-    }
-}
-
 export const createPost = functions.https.onCall((data, context) => {
     const body = data.body;
     const is_private = data.is_private || false;
@@ -69,14 +60,12 @@ export const createPost = functions.https.onCall((data, context) => {
         imgRatio: imgRatio,
     };
 
-    const shortBody = shorten(body, 35);
-
     const notification = {
-        type: 'FriendAccepted',
+        type: 'Post',
         sender_img: sender_img,
         sender_uid: context.auth.token.uid,
         uid: receiver_uid,
-        message: `${sender_name} posted on your wall: "${shortBody}"`,
+        message: `${sender_name} wrote a post to your profile`,
         timeCreated: currTime,
         notification_id: '',
         seen: false,

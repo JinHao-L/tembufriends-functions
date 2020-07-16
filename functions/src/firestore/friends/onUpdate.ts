@@ -10,9 +10,8 @@ export const addFriend = functions.firestore
         const newStatus = newChanges.status;
         const previousStatus = change.before.data().status;
 
-        const increment = admin.firestore.FieldValue.increment(1);
-
         if (previousStatus === 'pending' && newStatus === 'friends') {
+            const increment = admin.firestore.FieldValue.increment(1);
             const batch = db.batch();
             const initiator = newChanges.initiator_uid;
             const requested = newChanges.requested_uid;
@@ -25,7 +24,7 @@ export const addFriend = functions.firestore
                         const sender_img = user.photoURL;
 
                         const notification = {
-                            type: 'FriendAccepted',
+                            type: 'Friends',
                             sender_img: sender_img,
                             uid: requested,
                             message: `${requested_name} accepted your friend request`,
