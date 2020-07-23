@@ -17,7 +17,7 @@ export const getAllUsers = functions.https.onCall((request, context) => {
         .then((listUserResult) => listUserResult.users)
         .then(userRecords => {
             return userRecords.map((user) => {
-                const { uid, photoURL, displayName, email, emailVerified, customClaims } = user;
+                const { uid, photoURL, displayName, email, emailVerified, customClaims, disabled } = user;
                 return {
                     uid: uid,
                     photoURL: photoURL,
@@ -26,6 +26,7 @@ export const getAllUsers = functions.https.onCall((request, context) => {
                     emailVerified: emailVerified,
                     isAdmin: customClaims?.admin,
                     isVerified: customClaims?.verified,
+                    isDisabled: disabled
                 };
             });
         });

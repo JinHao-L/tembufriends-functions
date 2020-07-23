@@ -19,6 +19,9 @@ export const updateProfile = functions.firestore
         const verifiedBefore = change.before.get('verified');
         const verifiedAfter = change.after.get('verified');
 
+        const disabledBefore = change.before.get('disabled');
+        const disabledAfter = change.after.get('disabled');
+
         const uid = change.after.get('uid');
 
         if (profilePictureBefore !== profilePictureAfter || displayNameBefore !== displayNameAfter) {
@@ -44,6 +47,10 @@ export const updateProfile = functions.firestore
             return auth.setCustomUserClaims(uid, {
                 verified: verifiedAfter,
                 admin: adminAfter,
+            });
+        } else if (disabledBefore !== disabledAfter) {
+            return auth.updateUser(uid, {
+                disabled: disabledAfter
             });
         } else {
             return Promise.resolve();

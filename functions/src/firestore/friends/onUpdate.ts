@@ -27,7 +27,7 @@ export const addFriend = functions.firestore
                             type: 'Friends',
                             sender_img: sender_img,
                             uid: requested,
-                            message: `${requested_name} accepted your friend request`,
+                            message: `${requested_name} accepted your friend request.`,
                             timeCreated: admin.firestore.Timestamp.now(),
                             notification_id: '',
                             seen: false,

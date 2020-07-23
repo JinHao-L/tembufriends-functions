@@ -65,7 +65,7 @@ export const createPost = functions.https.onCall((data, context) => {
         sender_img: sender_img,
         sender_uid: context.auth.token.uid,
         uid: receiver_uid,
-        message: `${sender_name} wrote a post to your profile`,
+        message: `${sender_name} wrote a post to your profile.`,
         timeCreated: currTime,
         notification_id: '',
         seen: false,
