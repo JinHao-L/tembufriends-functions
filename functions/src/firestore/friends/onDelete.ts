@@ -15,15 +15,15 @@ export const removeFriend = functions.firestore
         const decrement = admin.firestore.FieldValue.increment(-1);
 
         if (deletedStatus === 'friends') {
-            const batch = db.batch();
+            const promises = [];
 
             const initiatorUserRef = db.collection('users').doc(`${initiator}`);
-            batch.update(initiatorUserRef, { friendsCount: decrement });
+            promises.push(initiatorUserRef.update('friendsCount', decrement));
 
             const requestedUserRef = db.collection('users').doc(`${requested}`);
-            batch.update(requestedUserRef, { friendsCount: decrement });
+            promises.push(requestedUserRef.update('friendsCount', decrement));
 
-            return batch.commit();
+            return Promise.all(promises);
         }
 
         return Promise.resolve();
