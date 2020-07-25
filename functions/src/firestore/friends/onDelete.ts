@@ -23,7 +23,8 @@ export const removeFriend = functions.firestore
             const requestedUserRef = db.collection('users').doc(`${requested}`);
             promises.push(requestedUserRef.update('friendsCount', decrement));
 
-            return Promise.all(promises);
+            return Promise.all(promises)
+                .catch((error) => console.log('User not found', error));
         }
 
         return Promise.resolve();

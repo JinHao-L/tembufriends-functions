@@ -12,6 +12,7 @@ export const addFriend = functions.firestore
 
         if (previousStatus === 'pending' && newStatus === 'friends') {
             const increment = admin.firestore.FieldValue.increment(1);
+            const batch = db.batch();
             const initiator = newChanges.initiator_uid;
             const requested = newChanges.requested_uid;
             const promise = admin
@@ -36,19 +37,19 @@ export const addFriend = functions.firestore
                             .collection(`notifications/${initiator}/notification`)
                             .doc();
                         notification.notification_id = notificationRef.id;
-                        return notificationRef.update(notification);
-                    } else {
-                        return;
+                        batch.set(notificationRef, notification);
                     }
                 });
 
             const initiatorUserRef = db.collection('users').doc(`${initiator}`);
-            const promise2 = initiatorUserRef.update( { friendsCount: increment });
+            batch.update(initiatorUserRef, { friendsCount: increment });
 
             const requestedUserRef = db.collection('users').doc(`${requested}`);
-            const promise3 = requestedUserRef.update( { friendsCount: increment });
+            batch.update(requestedUserRef, { friendsCount: increment });
 
-            return Promise.all([promise, promise2, promise3]);
+            return Promise.all([promise])
+                .then(() => batch.commit())
+                .catch((error) => console.log('User not found', error));
         }
 
         return Promise.resolve();

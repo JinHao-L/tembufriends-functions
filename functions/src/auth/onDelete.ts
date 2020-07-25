@@ -18,16 +18,16 @@ export const deleteProfile = functions.auth.user().onDelete((user) => {
             docs.forEach(doc => batch.delete(doc))
         );
 
-    const postQueryUpdate = db
-        .collectionGroup('userPosts')
-        .where('sender_uid', '==', uid)
+    const deleteFriends = db
+        .collection('friends')
+        .where(`friendship.${uid}`, '==', true)
         .get()
         .then(
             (docsSnapshot) => docsSnapshot.forEach(
-                doc => batch.update(doc.ref, 'sender_uid', 'deleted')
+                doc => batch.delete(doc.ref)
             )
         )
 
-    return Promise.all([postQueryDelete, postQueryUpdate])
+    return Promise.all([postQueryDelete, deleteFriends])
         .then(() => batch.commit())
 })
