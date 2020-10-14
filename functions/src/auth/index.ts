@@ -3,3 +3,4 @@ export {deleteProfile} from './onDelete';
 export {getUsers} from './getUserList';
 export {getAllUsers} from './getAllUsers';
 // export {syncUsers} from './syncUsers';
+export {emailVerify} from './emailVerify';
